@@ -1,0 +1,27 @@
+# Dependências instaladas automaticamente
+node_modules/
+
+# Arquivos e pastas gerados durante a compilação
+platforms/
+plugins/
+.gradle/
+build/
+
+# Arquivos do aplicativo gerados
+*.apk
+*.aab
+
+# Arquivo da chave de assinatura (não envie para a nuvem por segurança!)
+*.keystore
+*.jks
+
+# Arquivo com senhas e dados confidenciais
+release-signing.properties
+
+# Arquivos temporários e de sistema
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+*.swp
+*~

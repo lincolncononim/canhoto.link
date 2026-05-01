@@ -1,0 +1,44 @@
+{
+  "name": "projetocanhoto",
+  "displayName": "Projeto Canhoto",
+  "version": "1.0.0",
+  "description": "Aplicativo para leitura e consulta de arquivos XML de notas fiscais",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ecossistema:cordova"
+  ],
+  "author": "@Cononim",
+  "license": "ISC",
+  "dependencies": {
+    "cordova-android": "14.0.0",
+    "cordova-plugin-file": "^7.0.0",
+    "cordova-plugin-filechooser": "^1.2.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "multer": "^2.1.1",
+    "nodemailer": "^8.0.7",
+    "xml2js": "^0.6.2"
+  },
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-file": {
+        "ANDROIDX_WEBKIT_VERSION": "1.4.0"
+      },
+      "cordova-plugin-filechooser": {},
+      "cordova-plugin-android-permissions": {},
+      "cordova-plugin-filepath": {}
+    },
+    "platforms": [
+      "android"
+    ]
+  },
+  "type": "commonjs",
+  "devDependencies": {
+    "cordova-plugin-android-permissions": "^1.1.5",
+    "cordova-plugin-filepath": "^1.6.0"
+  }
+}

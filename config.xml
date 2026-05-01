@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="br.com.projetocanhoto.leitor" version="1.0.4" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Informações básicas -->
+    <name>Projeto Canhoto</name>
+    <description>Aplicativo para leitura de arquivos XML</description>
+    <author email="seuemail@email.com" href="https://seusite.com.br">@Lincoln</author>
+
+    <content src="index.html" />
+
+    <!-- Configurações gerais -->
+    <preference name="Orientation" value="portrait" />
+    <preference name="Fullscreen" value="false" />
+    <preference name="AndroidWindowSplashScreenBackground" value="#ffffff" />
+    <preference name="SplashScreenDelay" value="1500" />
+
+    <!-- Versões compatíveis -->
+    <preference name="AndroidTargetSdkVersion" value="33" />
+    <preference name="AndroidMinSdkVersion" value="22" />
+    <preference name="AndroidBuildToolsVersion" value="36.1.0" />
+    <preference name="GradleVersion" value="8.9" />
+    <preference name="KotlinVersion" value="1.9.0" />
+
+    <!-- Permissões básicas -->
+    <access origin="*" />
+    <allow-intent href="*" />
+
+    <!-- Configurações Android -->
+    <platform name="android">
+        <!-- Apenas permissões que realmente funcionam -->
+        <uses-permission android:name="android.permission.INTERNET" />
+        <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    </platform>
+
+    <!-- Apenas plugins que funcionam sem complicações -->
+    <plugin name="cordova-plugin-file" spec="8.0.1" />
+</widget>

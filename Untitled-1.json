@@ -1,0 +1,15 @@
+// package.json
+{
+    "name": "my-cordova-app",
+    "version": "1.0.0",
+    "description": "A Cordova Android app",
+    "main": "index.js",
+    "scripts": {
+        "start": "cordova run android",
+        "build": "cordova build android",
+        "serve": "cordova serve"
+    },
+    "dependencies": {
+        "cordova": "latest"
+    }
+}

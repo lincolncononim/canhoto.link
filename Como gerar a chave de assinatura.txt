@@ -1,0 +1,51 @@
+🛠️ Como gerar a chave de assinatura
+Você vai usar uma ferramenta que já vem instalada junto com o Java, chamada keytool. Todo o processo é feito no terminal.
+Passo 1: Abra o terminal do VS Code
+Vá em Terminal > Novo Terminal e navegue até a pasta principal do seu projeto, a mesma onde está o arquivo config.xml.
+Passo 2: Execute o comando para criar a chave
+Cole esse comando no terminal, substituindo os dados entre colchetes pelos seus dados reais:
+bash
+keytool -genkey -v -keystore minha-chave.keystore -alias nome-do-app -keyalg RSA -keysize 2048 -validity 10000
+Explicação dos parâmetros:
+minha-chave.keystore: é o nome do arquivo que será gerado — você pode escolher o nome que quiser
+nome-do-app: é um apelido para identificar essa chave — escolha algo fácil de lembrar
+-validity 10000: significa que a chave será válida por 10.000 dias (cerca de 27 anos), tempo mais que suficiente para uso
+Passo 3: Preencha as informações solicitadas
+Depois de digitar o comando, o terminal vai pedir algumas informações. Você pode preencher assim:
+plaintext
+Digite a senha do armazenamento de chaves: → Escolha uma senha forte e anote-a!
+Digite novamente a senha: → Confirme a senha
+
+Qual é o seu nome e sobrenome? → Digite seu nome completo
+Qual é o nome da sua unidade organizacional? → Digite o nome da sua empresa ou deixe em branco
+Qual é o nome da sua organização? → Digite o nome da empresa ou deixe em branco
+Qual é o nome da sua cidade ou localidade? → Digite sua cidade
+Qual é o nome do seu estado ou província? → Digite seu estado
+Quais são as duas letras do código do país para esta unidade? → Digite BR
+
+Confirme se as informações estão corretas: [sim/não] → Digite sim
+
+Digite a senha da chave para <nome-do-app>: → Você pode usar a mesma senha de antes, ou criar outra — anote também!
+✅ Pronto! Será gerado um arquivo chamado minha-chave.keystore dentro da pasta do seu projeto. Guarde esse arquivo e as senhas em um local seguro — se perder, não conseguirá mais atualizar o seu aplicativo.
+📝 Como usar essa chave para gerar o arquivo final para a Play Store
+Depois de gerar a chave, você vai usá-la para transformar o arquivo que geramos anteriormente em um arquivo assinado, que é o aceito pela Google.
+Passo 1: Gere o arquivo de versão de lançamento
+No terminal, execute:
+bash
+cordova build android --release
+O arquivo gerado vai estar em:
+platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk
+Passo 2: Assine o arquivo com a sua chave
+Ainda no terminal, execute esse comando, substituindo os dados pelos seus:
+bash
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore minha-chave.keystore platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk nome-do-app
+Ele vai pedir a senha que você definiu na hora de criar a chave — basta digitar e confirmar.
+Passo 3: Otimize o arquivo para a Play Store
+Por fim, execute esse comando para deixar o arquivo pronto para publicação:
+bash
+zipalign -v 4 platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk ConsultaNotaFiscal.apk
+✅ Agora você tem o arquivo ConsultaNotaFiscal.apk — esse é o arquivo final que você vai enviar diretamente na sua conta de desenvolvedor da Play Store!
+⚠️ Observações importantes:
+Guarde tudo com segurança: Nunca perca o arquivo .keystore e as senhas usadas — sem eles, você não conseguirá atualizar o aplicativo futuramente, e terá que criar um novo com outro nome.
+Mantenha os dados: Anote todos os dados que usou para gerar a chave, pois a Google pode pedir essas informações em auditorias ou atualizações.
+Quer que eu também te mostre o passo a passo de como enviar esse arquivo na Play Store, depois que estiver tudo pronto?
