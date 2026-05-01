@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Validação e Assinatura Digital | Versão Empresarial</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+            background: #f0f2f5; 
+            color: #333; 
+            padding: 20px; 
+            min-height: 100vh; 
+        }
+        .container { 
+            max-width: 750px; 
+            margin: 20px auto; 
+            background: #ffffff; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08); 
+            padding: 30px; 
+            border-top: 4px solid #1a3a70; 
+        }
+        .header-logo {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .header-logo i { font-size: 32px; color: #1a3a70; margin-right: 10px; }
+        .header-logo span { 
+            font-size: 22px; 
+            font-weight: 700; 
+            color: #1a3a70; 
+            letter-spacing: 0.5px;
+        }
+        h2 { 
+            color: #1a3a70; 
+            font-size: 20px; 
+            text-align: center; 
+            margin-bottom: 25px; 
+            font-weight: 600; 
+        }
+        .destaque { 
+            background: #eef4fc; 
+            border-left: 4px solid #1a3a70; 
+            padding: 15px 20px; 
+            border-radius: 6px; 
+            margin-bottom: 25px; 
+            color: #1a3a70; 
+            font-size: 14px; 
+        }
+        .campo { margin-bottom: 20px; }
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 600; 
+            font-size: 14px; 
+            color: #2c3e50; 
+        }
+        input { 
+            width: 100%; 
+            padding: 12px 15px; 
+            font-size: 14px; 
+            border: 1px solid #d1d5db; 
+            border-radius: 6px; 
+            background: #fafafa; 
+            transition: all 0.2s ease; 
+        }
+        input:focus { 
+            outline: none; 
+            border-color: #1a3a70; 
+            box-shadow: 0 0 0 2px rgba(26, 58, 112, 0.1); 
+            background: #fff; 
+        }
+        button { 
+            padding: 12px 20px; 
+            font-size: 14px; 
+            font-weight: 600; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        button:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        .btn-principal { background: #1a3a70; color: white; margin-top: 10px; }
+        .btn-principal:hover { background: #142c54; }
+        
+        #resultado { margin-top: 30px; padding: 0; }
+        .erro { 
+            background: #fef2f2; 
+            color: #991b1b; 
+            padding: 15px; 
+            border-radius: 6px; 
+            border-left: 4px solid #dc2626; 
+            font-weight: 500; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .sucesso { 
+            color: #065f46; 
+            font-weight: 600; 
+            font-size: 18px; 
+            margin-bottom: 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .secao-dados { 
+            margin-bottom: 20px; 
+            padding-bottom: 15px; 
+            border-bottom: 1px solid #e5e7eb; 
+        }
+        .secao-dados h4 { 
+            color: #1a3a70; 
+            font-size: 15px; 
+            margin-bottom: 12px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            font-weight: 700; 
+            text-transform: uppercase;
+        }
+        .linha-dado { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 5px; 
+            margin-bottom: 8px; 
+            font-size: 14px; 
+            color: #4b5563; 
+        }
+        .linha-dado strong { 
+            color: #1f2937; 
+            min-width: 140px; 
+            font-weight: 600; 
+        }
+        #mensagem { 
+            margin-top: 20px; 
+            padding: 12px 15px; 
+            border-radius: 6px; 
+            font-weight: 500; 
+            display: none; 
+        }
+        .area-dados { 
+            margin-top: 25px; 
+            padding: 20px; 
+            background: #f9fafb; 
+            border-radius: 8px; 
+            border: 1px solid #e5e7eb; 
+        }
+        .campo-dado { margin-bottom: 18px; }
+        .obrigatorio { color: #dc2626; font-weight: bold; }
+        .botoes-acao { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+        .botao-imprimir { background: #059669; color: white; }
+        .botao-imprimir:hover { background: #047857; }
+        .botao-email { background: #7c3aed; color: white; }
+        .botao-email:hover { background: #6d28d9; }
+        .botao-compartilhar { background: #2563eb; color: white; }
+        .botao-compartilhar:hover { background: #1d4ed8; }
+        .botao-limpar { background: #dc2626; color: white; }
+        .botao-limpar:hover { background: #b91c1c; }
+        .opcoes { display: flex; gap: 15px; margin-top: 10px; }
+        .opcao { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            cursor: pointer; 
+            font-size: 14px; 
+            background: #fff; 
+            padding: 8px 15px; 
+            border-radius: 6px; 
+            border: 1px solid #e5e7eb; 
+            transition: all 0.2s; 
+        }
+        .opcao:hover { border-color: #1a3a70; background: #eef4fc; }
+        .opcao input { width: auto; }
+        #campoParcelas { display: none; margin-top: 15px; }
+        #campoParcelas.mostrar { display: block; }
+
+        /* ESTILOS DA ÁREA DE ASSINATURA */
+        .assinatura-container {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            text-align: center;
+        }
+        #canvasAssinatura {
+            border: 1px solid #9ca3af;
+            background: white;
+            border-radius: 4px;
+            cursor: crosshair;
+            max-width: 100%;
+        }
+        .botoes-assinatura {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn-limpar-ass {
+            background: #6b7280;
+            color: white;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        .btn-salvar-ass {
+            background: #059669;
+            color: white;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        /* RODAPÉ */
+        .rodape {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        @media print { 
+            body { background: white; } 
+            .container { box-shadow: none; border: none; } 
+            .campo, button:not(.botao-imprimir), .destaque, .botoes-assinatura { display: none !important; } 
+            #canvasAssinatura { max-width: 250px; }
+        }
+        @media (max-width: 600px) { 
+            .container { padding: 20px; margin: 5px auto; } 
+            .botoes-acao { flex-direction: column; } 
+            button { width: 100%; margin-left: 0 !important; }
+            .opcoes { flex-direction: column; gap: 8px; } 
+            #canvasAssinatura { width: 100%; height: 140px; }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div class="container">
+        <div class="header-logo">
+            <i class="fas fa-file-signature"></i>
+            <span>SISTEMA DE ASSINATURA DIGITAL</span>
+        </div>
+        
+        <h2>Validação de Nota Fiscal e Reconhecimento de Recebimento</h2>
+        
+        <div class="destaque">
+            <i class="fas fa-shield-alt"></i> Sistema licenciado | Ambiente Seguro | Proibida cópia ou reprodução sem autorização.
+        </div>
+
+        <div class="campo">
+            <label for="arquivoXml"><i class="fas fa-upload"></i> Selecione o Arquivo XML da Nota Fiscal:</label>
+            <input type="file" id="arquivoXml" accept=".xml">
+            
+            <div style="display: flex; align-items: center; flex-wrap: wrap;">
+                <button class="btn-principal" onclick="buscarDados()">
+                    <i class="fas fa-search"></i> Carregar Dados
+                </button>
+            </div>
+        </div>
+
+        <div id="resultado"></div>
+        <div id="mensagem"></div>
+
+        <div class="rodape">
+            Versão 2.0 Empresarial | © Todos os direitos reservados
+        </div>
+    </div>
+
+    <script>
+        // 🔒 SEGURANÇA - BLOQUEIOS
+        document.addEventListener('keydown', function(e) {
+            if(e.key === "F12" || 
+               (e.ctrlKey && e.shiftKey && e.key === "I") ||
+               (e.ctrlKey && e.shiftKey && e.key === "J") ||
+               (e.ctrlKey && e.key === "U")) {
+                e.preventDefault();
+                alert("⚠️ Acesso negado!\nSistema protegido contra cópia.");
+                return false;
+            }
+        });
+
+        document.body.style.userSelect = "none";
+        document.body.style.webkitUserSelect = "none";
+        document.body.style.msUserSelect = "none";
+
+        let conteudoXml = null;
+        let dadosNota = null;
+        let canvas, ctx;
+        let desenhando = false;
+        let assinaturaBase64 = '';
+        let localizacao = "Localização não obtida";
+
+        (function(){
+            emailjs.init("1G4KqwAgh9J0gUnvo");
+        })();
+        const SERVICO_ID = "service_ic968rm";
+        const TEMPLATE_ID = "template_s0hooxa";
+
+        document.getElementById('arquivoXml').addEventListener('change', function(e) {
+            const arquivo = e.target.files[0];
+            if (!arquivo) return;
+            const nomeArquivo = arquivo.name.toLowerCase();
+            if(!nomeArquivo.endsWith('.xml')) {
+                alert('❌ Apenas arquivos .XML são permitidos!');
+                e.target.value = '';
+                return;
+            }
+            const leitor = new FileReader();
+            leitor.onload = function(evento) {
+                conteudoXml = evento.target.result;
+                alert('✅ Arquivo carregado com sucesso!');
+            };
+            leitor.readAsText(arquivo);
+        });
+
+        function buscarDados() {
+            const areaResultado = document.getElementById('resultado');
+            
+            if (!conteudoXml) {
+                areaResultado.innerHTML = '<div class="erro"><i class="fas fa-exclamation-circle"></i> Selecione um arquivo XML primeiro.</div>';
+                return;
+            }
+
+            try {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(conteudoXml, "text/xml");
+
+                const numeroNota = xmlDoc.querySelector("nNF")?.textContent?.trim() || xmlDoc.querySelector("numero")?.textContent?.trim() || 'Não informado';
+                const serie = xmlDoc.querySelector("serie")?.textContent?.trim() || 'Não informado';
+                const chaveAcesso = xmlDoc.querySelector("infNFe")?.getAttribute("Id")?.replace("NFe", "") || 'Não informado';
+                const emitente = xmlDoc.querySelector("emit > xNome")?.textContent?.trim() || 'Não informado';
+                const cnpjEmitente = xmlDoc.querySelector("emit > CNPJ")?.textContent?.trim() || '';
+                const destinatario = xmlDoc.querySelector("dest > xNome")?.textContent?.trim() || 'Não informado';
+                const cpfCnpjDest = xmlDoc.querySelector("dest > CNPJ")?.textContent?.trim() || xmlDoc.querySelector("dest > CPF")?.textContent?.trim() || '';
+                const dataEmissao = xmlDoc.querySelector("dhEmi")?.textContent?.substring(0,10) || xmlDoc.querySelector("dEmi")?.textContent?.trim() || '';
+                const valorTotal = xmlDoc.querySelector("vNF")?.textContent?.trim() || '0';
+
+                dadosNota = { 
+                    numero: numeroNota, 
+                    serie: serie, 
+                    chave: chaveAcesso, 
+                    dataEmissao: dataEmissao, 
+                    valor: valorTotal, 
+                    emitente: emitente
+, 
+                    cnpjEmit: cnpjEmitente, 
+                    destinatario: destinatario, 
+                    docDest: cpfCnpjDest 
+                };
+
+                let valorFormatado = 'R$ ' + parseFloat(valorTotal).toFixed(2).replace('.', ',');
+
+                areaResultado.innerHTML = `
+                    <h3 class="sucesso"><i class="fas fa-check-circle"></i> Documento Carregado</h3>
+                    
+                    <div class="secao-dados">
+                        <h4><i class="fas fa-file-alt"></i> Dados da Nota Fiscal</h4>
+                        <div class="linha-dado"><strong>Número:</strong> ${dadosNota.numero}</div>
+                        <div class="linha-dado"><strong>Série:</strong> ${dadosNota.serie}</div>
+                        <div class="linha-dado"><strong>Chave de Acesso:</strong> <span style="word-break: break-all;">${dadosNota.chave}</span></div>
+                        <div class="linha-dado"><strong>Data Emissão:</strong> ${formatarData(dadosNota.dataEmissao)}</div>
+                        <div class="linha-dado"><strong>Valor Total:</strong> ${valorFormatado}</div>
+                    </div>
+
+                    <div class="secao-dados">
+                        <h4><i class="fas fa-building"></i> Emitente</h4>
+                        <div class="linha-dado"><strong>Nome:</strong> ${dadosNota.emitente}</div>
+                        <div class="linha-dado"><strong>CNPJ:</strong> ${formatarCnpj(dadosNota.cnpjEmit)}</div>
+                    </div>
+
+                    <div class="secao-dados">
+                        <h4><i class="fas fa-user"></i> Destinatário</h4>
+                        <div class="linha-dado"><strong>Nome:</strong> ${dadosNota.destinatario}</div>
+                        <div class="linha-dado"><strong>Documento:</strong> ${formatarCnpj(dadosNota.docDest)}</div>
+                    </div>
+
+                    <div class="area-dados">
+                        <h4><i class="fas fa-id-card"></i> Dados do Responsável pelo Recebimento</h4>
+                        <div class="campo-dado">
+                            <label>Nome Completo: <span class="obrigatorio">*</span></label>
+                            <input type="text" id="nomeResp" placeholder="DIGITE SEU NOME COMPLETO" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()" required>
+                        </div>
+                        <div class="campo-dado">
+                            <label>CPF: <span class="obrigatorio">*</span></label>
+                            <input type="text" id="cpfResp" placeholder="000.000.000-00" maxlength="14" oninput="formatarCPF(this)" required>
+                        </div>
+                        <div class="campo-dado">
+                            <label>Data: <span class="obrigatorio">*</span></label>
+                            <input type="date" id="dataResp" required>
+                        </div>
+                        
+                        <div class="campo-dado">
+                            <label>Possui Boleto? <span class="obrigatorio">*</span></label>
+                            <div class="opcoes">
+                                <label class="opcao">
+                                    <input type="radio" name="boleto" value="Sim" onchange="mostrarParcelas(this)" required>
+                                    <span>✅ Sim</span>
+                                </label>
+                                <label class="opcao">
+                                    <input type="radio" name="boleto" value="Não" onchange="mostrarParcelas(this)">
+                                    <span>❌ Não</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="campoParcelas" class="campo-dado">
+                            <label>Quantidade de Parcelas: <span class="obrigatorio">*</span></label>
+                            <input type="number" id="parcelas" min="1" placeholder="Ex: 3 ou 10">
+                        </div>
+
+                        <div class="campo-dado">
+                            <label>Assinatura Digital: <span class="obrigatorio">*</span></label>
+                            <div class="assinatura-container">
+                                <canvas id="canvasAssinatura" width="450" height="150"></canvas>
+                                <div class="botoes-assinatura">
+                                    <button class="btn-limpar-ass" onclick="limparAssinatura()"><i class="fas fa-eraser"></i> Limpar</button>
+                                    <button class="btn-salvar-ass" onclick="salvarAssinatura()"><i class="fas fa-save"></i> Salvar Assinatura</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="botoes-acao">
+                            <button class="botao-imprimir" onclick="imprimir()"><i class="fas fa-print"></i> Imprimir Recibo</button>
+                            <button class="botao-email" onclick="confirmar()"><i class="fas fa-check"></i> Confirmar e Enviar</button>
+                            <button class="botao-compartilhar" onclick="compartilhar()"><i class="fas fa-share-alt"></i> Compartilhar Dados</button>
+                            <button class="botao-limpar" onclick="limpar()"><i class="fas fa-eraser"></i> Limpar</button>
+                        </div>
+                    </div>
+                `;
+
+                inicializarCanvas();
+
+            } catch(erro) {
+                areaResultado.innerHTML = `<div class="erro"><i class="fas fa-exclamation-triangle"></i> Erro ao processar arquivo: ${erro.message}</div>`;
+            }
+        }
+
+        function inicializarCanvas() {
+            canvas = document.getElementById('canvasAssinatura');
+            ctx = canvas.getContext('2d');
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#000';
+
+            canvas.addEventListener('mousedown', iniciarDesenho);
+            canvas.addEventListener('mousemove', desenhar);
+            canvas.addEventListener('mouseup', pararDesenho);
+            canvas.addEventListener('mouseout', pararDesenho);
+
+            canvas.addEventListener('touchstart', iniciarDesenhoTouch);
+            canvas.addEventListener('touchmove', desenharTouch);
+            canvas.addEventListener('touchend', pararDesenho);
+        }
+
+        function iniciarDesenho(e) {
+            desenhando = true;
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
+        }
+        function desenhar(e) {
+            if (!desenhando) return;
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+        }
+        function iniciarDesenhoTouch(e) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const x = e.touches[0].clientX - rect.left;
+            const y = e.touches[0].clientY - rect.top;
+            desenhando = true;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+        function desenharTouch(e) {
+            if (!desenhando) return;
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const x = e.touches[0].clientX - rect.left;
+            const y = e.touches[0].clientY - rect.top;
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+        function pararDesenho() {
+            desenhando = false;
+        }
+        function limparAssinatura() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            assinaturaBase64 = '';
+        }
+        function salvarAssinatura() {
+            assinaturaBase64 = canvas.toDataURL('image/png');
+            alert('✅ Assinatura registrada com sucesso!');
+        }
+
+        function mostrarParcelas(opcao) {
+            const campo = document.getElementById('campoParcelas');
+            if(opcao.value === 'Sim') {
+                campo.classList.add('mostrar');
+                document.getElementById('parcelas').required = true;
+            } else {
+                campo.classList.remove('mostrar');
+                document.getElementById('parcelas').value = '';
+                document.getElementById('parcelas').required = false;
+            }
+        }
+
+        function formatarData(data) {
+            if (!data || data === 'Não informado') return data;
+            return data.split('-').reverse().join('/');
+        }
+        function formatarCnpj(valor) {
+            if (!valor || valor === 'Não informado') return valor;
+            if (valor.length === 14) return valor.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
+            if (valor.length === 11) return valor.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.$2.$3-$4");
+            return valor;
+        }
+        function formatarCPF(campo) {
+            let v = campo.value.replace(/\D/g, '');
+            if (v.length <= 11) {
+                v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            }
+            campo.value = v;
+        }
+
+        function limpar() {
+            const conf = confirm("⚠️ Deseja limpar todos os dados?");
+            if(conf) {
+                document.getElementById('nomeResp').value = '';
+                document.getElementById('cpfResp').value = '';
+                document.getElementById('dataResp').value = '';
+                document.getElementById('arquivoXml').value = '';
+                if(document.getElementById('parcelas')) document.getElementById('parcelas').value = '';
+                if(document.getElementById('campoParcelas')) document.getElementById('campoParcelas').classList.remove('mostrar');
+                if(canvas) limparAssinatura();
+                conteudoXml = null;
+                dadosNota = null;
+                localizacao = "Localização não obtida";
+                document.getElementById('resultado').innerHTML = '';
+                document.getElementById('mensagem').style.display = 'none';
+            }
+        }
+
+        function imprimir() {
+            const nome = document.getElementById('nomeResp').value.trim();
+            const cpf = document.getElementById('cpfResp').value.trim();
+            const data = document.getElementById('dataResp').value;
+            const boleto = document.querySelector('input[name="boleto"]:checked');
+            const parcelas = document.getElementById('parcelas').value;
+
+            if(!nome || !nome.includes(' ')) { alert('Informe Nome e Sobrenome.'); return; }
+            if(!cpf) { alert('Informe o CPF.'); return; }
+            if(!data) { alert('Selecione a Data.'); return; }
+            if(!boleto) { alert('Informe se possui Boleto.'); return; }
+            if(boleto.value === 'Sim' && (!parcelas || parcelas < 1)) { alert('Informe a quantidade de parcelas.'); return; }
+            if(!assinaturaBase64) { alert('Desenhe e SALVE sua assinatura.'); return; }
+
+            window.print();
+        }
+
+        function compartilhar() {
+            const nome = document.getElementById('nomeResp').value.trim();
+            const cpf = document.getElementById('cpfResp').value.trim();
+            const data = document.getElementById('dataResp').value;
+            const boleto = document.querySelector('input[name="boleto"]:checked');
+            const parcelas = document.getElementById('parcelas').value;
+
+            if(!nome || !nome.includes(' ')) { alert('Informe Nome e Sobrenome.'); return; }
+            if(!cpf) { alert('Informe o CPF.'); return; }
+            if(!data) { alert('Selecione a Data.'); return; }
+            if(!boleto) { alert('Informe se possui Boleto.'); return; }
+            if(boleto.value === 'Sim' && (!parcelas || parcelas < 1)) { alert('Informe a quantidade de parcelas.'); return; }
+            if(!assinaturaBase64) { alert('Desenhe e SALVE sua assinatura.'); return; }
+
+            let textoBoleto = `Possui Boleto? ${boleto.value}`;
+            if(boleto.value === 'Sim') textoBoleto += ` (${parcelas} parcelas)`;
+
+            const texto = `
+📄 RECIBO DE RECEBIMENTO
+Nota: ${dadosNota.numero} | Série: ${dadosNota.serie}
+Valor: R$ ${parseFloat(dadosNota.valor).toFixed(2).replace('.', ',')}
+Emitente: ${dadosNota.emitente}
+${textoBoleto}
+
+Recebido por: ${nome}
+CPF: ${cpf}
+Data: ${formatarData(data)}
+Localização: ${localizacao}
+            `;
+
+            if (navigator.share) {
+                navigator.share({ title: 'Recibo de Nota Fiscal', text: texto });
+            } else {
+                navigator.clipboard.writeText(texto);
+                alert('✅ Dados copiados!');
+            }
+        }
+
+        // FUNÇÃO DE LOCALIZAÇÃO
+function obterLocalizacao() {
+    return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+            localizacao = "Navegador não suporta geolocalização";
+            resolve();
+        } else {
+            navigator.geolocation.getCurrentPosition(
+                (posicao) => {
+                    const lat = posicao.coords.latitude;
+                    const lon = posicao.coords.longitude;
+                    
+                    // ✅ LINK ESPECIAL PARA CELULAR (ABRE DIRETO NO APP)
+                    // Usa o esquema geo: que o Android/iOS entendem
+                    localizacao = `<a href="geo:${lat},${lon}?q=${lat},${lon}" style="color:blue; font-weight:bold; text-decoration:none;">
+                    📍 ABRIR LOCALIZAÇÃO NO MAPA</a>`;
+                    
+                    resolve();
+                },
+                (erro) => {
+                    // Se não conseguiu, manda texto simples
+                    localizacao = "Localização não disponível";
+                    resolve();
+                }
+            );
+        }
+    });
+}
+
+        async function confirmar() {
+            const nome = document.getElementById('nomeResp').value.trim();
+            const cpf = document.getElementById('cpfResp').value.trim();
+            const data = document.getElementById('dataResp').value;
+            const boleto = document.querySelector('input[name="boleto"]:checked');
+            const parcelas = document.getElementById('parcelas').value;
+            const msg = document.getElementById('mensagem');
+
+            if(!nome || !nome.includes(' ')) { alert('Informe Nome e Sobrenome.'); return; }
+            if(!cpf) { alert('Informe o CPF.'); return; }
+            if(!data) { alert('Selecione a Data.'); return; }
+            if(!boleto) { alert('Informe se possui Boleto.'); return; }
+            if(boleto.value === 'Sim' && (!parcelas || parcelas < 1)) { alert('Informe a quantidade de parcelas.'); return; }
+            if(!assinaturaBase64) { alert('Desenhe e clique em SALVAR ASSINATURA.'); return; }
+
+            // OBTÉM LOCALIZAÇÃO ANTES DE ENVIAR
+            msg.style.display = 'block';
+            msg.className = 'sucesso';
+            msg.innerHTML = '<i class="fas fa-map-marker-alt"></i> Obtendo localização...';
+
+            await obterLocalizacao();
+
+            const hora = new Date().toLocaleTimeString('pt-BR');
+            const qtdParcelas = boleto.value === 'Sim' ? `${parcelas}x` : "Não";
+
+            const dados = {
+                to_name: nome,
+                numero_nota: dadosNota.numero,
+                serie_nota: dadosNota.serie,
+                chave_acesso: dadosNota.chave,
+                data_emissao: formatarData(dadosNota.dataEmissao),
+                valor_total: `R$ ${parseFloat(dadosNota.valor || 0).toFixed(2).replace('.', ',')}`,
+                nome_emitente: dadosNota.emitente,
+                cnpj_emitente: formatarCnpj(dadosNota.cnpjEmit),
+                nome_destinatario: dadosNota.destinatario,
+                cpfcnpj_destinatario: formatarCnpj(dadosNota.docDest),
+                tem_boleto: boleto.value,
+                qtd_parcelas: qtdParcelas,
+                nome_responsavel: nome,
+                cpf_responsavel: cpf,
+                data_documento: formatarData(data),
+                hora_envio: hora,
+                localizacao: localizacao,
+                assinatura: assinaturaBase64
+            };
+
+            msg.innerHTML = '<i class="fas fa-paper-plane"></i> Enviando documento...';
+
+            emailjs.send(SERVICO_ID, TEMPLATE_ID, dados)
+            .then(() => {
+                msg.style.display = 'block';
+                msg.className = 'sucesso';
+                msg.innerHTML = '<i class="fas fa-check-circle"></i> ✅ Documento assinado, localizado e enviado com sucesso!';
+            })
+            .catch(() => {
+                msg.style.display = 'block';
+                msg.className = 'erro';
+                msg.innerHTML = '<i class="fas fa-exclamation-circle"></i> ❌ Erro ao enviar o documento.';
+            });
+        }
+
+    </script>
+</body>
+</html>
