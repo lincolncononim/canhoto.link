@@ -622,16 +622,14 @@ function obterLocalizacao() {
                     const lat = posicao.coords.latitude;
                     const lon = posicao.coords.longitude;
                     
-                    // ✅ LINK ESPECIAL PARA CELULAR (ABRE DIRETO NO APP)
-                    // Usa o esquema geo: que o Android/iOS entendem
-                    localizacao = `<a href="geo:${lat},${lon}?q=${lat},${lon}" style="color:blue; font-weight:bold; text-decoration:none;">
-                    📍 ABRIR LOCALIZAÇÃO NO MAPA</a>`;
+                    // ✅ LINK PERFEITO PARA SITE (HTTPS)
+                    localizacao = `<a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" style="color:blue; text-decoration:underline; font-weight:bold;">
+                    🗺️ Clique aqui para ver no Mapa</a>`;
                     
                     resolve();
                 },
                 (erro) => {
-                    // Se não conseguiu, manda texto simples
-                    localizacao = "Localização não disponível";
+                    localizacao = "Permissão negada ou GPS desligado";
                     resolve();
                 }
             );
